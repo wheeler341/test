@@ -1,83 +1,84 @@
 const MATERIALS = [
+  const MATERIALS = [
   {
-    "name": "Dustite",
-    "orePrice": 1000,
-    "gemPrice": 25000
+    name: "Dustite",
+    orePrice: 1000,
+    gemPrice: 25000
   },
   {
-    "name": "Void Rift",
-    "orePrice": 350,
-    "gemPrice": 26500
+    name: "Void Rift",
+    orePrice: 350,
+    gemPrice: null
   },
   {
-    "name": "Gold",
-    "orePrice": 1500,
-    "gemPrice": 28500
+    name: "Gold",
+    orePrice: 1500,
+    gemPrice: null
   },
   {
-    "name": "Copite",
-    "orePrice": 550,
-    "gemPrice": 30000
+    name: "Copite",
+    orePrice: 550,
+    gemPrice: 27000
   },
   {
-    "name": "Velorite",
-    "orePrice": 650,
-    "gemPrice": 31500
+    name: "Velorite",
+    orePrice: 650,
+    gemPrice: 29000
   },
   {
-    "name": "Crimsite",
-    "orePrice": 750,
-    "gemPrice": 33500
+    name: "Crimsite",
+    orePrice: 750,
+    gemPrice: 31500
   },
   {
-    "name": "Shalore",
-    "orePrice": 850,
-    "gemPrice": 35000
+    name: "Shalore",
+    orePrice: 850,
+    gemPrice: 33500
   },
   {
-    "name": "Noctite",
-    "orePrice": 950,
-    "gemPrice": 36500
+    name: "Noctite",
+    orePrice: 950,
+    gemPrice: 35500
   },
   {
-    "name": "Auorite",
-    "orePrice": 1050,
-    "gemPrice": 38500
+    name: "Auorite",
+    orePrice: 1050,
+    gemPrice: 37500
   },
   {
-    "name": "Vexite",
-    "orePrice": 1150,
-    "gemPrice": 40000
+    name: "Vexite",
+    orePrice: 1150,
+    gemPrice: 39500
   },
   {
-    "name": "Zephyne",
-    "orePrice": 1250,
-    "gemPrice": 41500
+    name: "Zephyne",
+    orePrice: 1250,
+    gemPrice: 41500
   },
   {
-    "name": "Korunite",
-    "orePrice": 1350,
-    "gemPrice": 43500
+    name: "Korunite",
+    orePrice: 1350,
+    gemPrice: 44000
   },
   {
-    "name": "Drakonite",
-    "orePrice": 1450,
-    "gemPrice": 45000
+    name: "Drakonite",
+    orePrice: 1450,
+    gemPrice: 46000
   },
   {
-    "name": "Potent Void Rift",
-    "orePrice": 350,
-    "gemPrice": 46500
+    name: "Potent Void Rift",
+    orePrice: 350,
+    gemPrice: null
   },
   {
-    "name": "Pyrethium",
-    "orePrice": null,
-    "gemPrice": 48500
+    name: "Pyrethium",
+    orePrice: null,
+    gemPrice: 48000
   },
   {
-    "name": "Infernite",
-    "orePrice": null,
-    "gemPrice": 50000
+    name: "Infernite",
+    orePrice: null,
+    gemPrice: 50000
   }
 ];
 
