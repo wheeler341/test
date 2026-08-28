@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#071013" />
+  <title>Koruxa Ore & Gem Shop</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="eyebrow">KORUXA MARKET</div>
+      <h1>Ore & Gem Shop</h1>
+      <p class="subtitle">Choose a material, set a quantity, and build your order.</p>
+      <div class="rule-banner">
+        <span class="rule-icon">◆</span>
+        <strong>Gem rule:</strong> Every 1 uncut gem requires 3–5 matching ore in the same order.
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar">
+        <label class="search-wrap" aria-label="Search materials">
+          <span>⌕</span>
+          <input id="search" type="search" placeholder="Search ore or gems..." autocomplete="off" />
+        </label>
+        <button id="clearOrder" class="ghost-btn" type="button">Clear order</button>
+      </section>
+
+      <section id="materialList" class="material-list" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <aside id="cart" class="cart">
+    <div class="cart-inner">
+      <div class="cart-heading">
+        <div>
+          <div class="eyebrow">CURRENT ORDER</div>
+          <h2>Order Summary</h2>
+        </div>
+        <div id="cartCount" class="count-pill">0 items</div>
+      </div>
+
+      <div id="cartItems" class="cart-items">
+        <div class="empty-cart">Nothing added yet.</div>
+      </div>
+
+      <div class="cart-footer">
+        <div class="total-row">
+          <span>Total</span>
+          <strong id="grandTotal">0 GP</strong>
+        </div>
+        <div id="validationMessage" class="validation-message"></div>
+        <button id="copyOrder" class="primary-btn" type="button">Copy Order for Discord</button>
+      </div>
+    </div>
+  </aside>
+
+  <template id="materialTemplate">
+    <article class="material-card">
+      <div class="card-top">
+        <div class="material-icon">◆</div>
+        <div class="material-title">
+          <h3></h3>
+          <div class="prices"></div>
+        </div>
+      </div>
+
+      <div class="type-toggle" role="group" aria-label="Choose ore or gem">
+        <button class="type-btn active" data-type="ore" type="button">Ore</button>
+        <button class="type-btn" data-type="gem" type="button">Uncut Gem</button>
+      </div>
+
+      <div class="card-bottom">
+        <label class="qty-label">
+          <span>Qty</span>
+          <input class="qty-input" type="number" min="1" step="1" value="1" inputmode="numeric" />
+        </label>
+        <div class="line-total">0 GP</div>
+        <button class="add-btn" type="button">Add</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
