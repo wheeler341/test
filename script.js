@@ -234,14 +234,25 @@ function renderMaterials() {
 
       // Check if trying to buy a gem without ore in cart
       if (selectedType === "gem") {
-        const hasMatchingOre = state.cart.some(
-          item => item.type === "ore" && item.name === material.name
+        const matchingOreQty = state.cart.reduce(
+          (sum, item) =>
+            item.type === "ore" && item.name === material.name
+              ? sum + item.qty
+              : sum,
+          0
         );
 
-        if (!hasMatchingOre) {
+        if (matchingOreQty === 0) {
           validationMessage.className = "validation-message";
           validationMessage.textContent =
             `⚠ You must add matching ${material.name} ore to your cart before purchasing gems.`;
+          return;
+        }
+
+        if (matchingOreQty < 6) {
+          validationMessage.className = "validation-message";
+          validationMessage.textContent =
+            `⚠ You need at least 6 ${material.name} ore in your cart before purchasing any gems. You have ${matchingOreQty}.`;
           return;
         }
       }
