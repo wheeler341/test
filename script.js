@@ -232,6 +232,20 @@ function renderMaterials() {
         return;
       }
 
+      // Check if trying to buy a gem without ore in cart
+      if (selectedType === "gem") {
+        const hasMatchingOre = state.cart.some(
+          item => item.type === "ore" && item.name === material.name
+        );
+
+        if (!hasMatchingOre) {
+          validationMessage.className = "validation-message";
+          validationMessage.textContent =
+            `⚠ You must add matching ${material.name} ore to your cart before purchasing gems.`;
+          return;
+        }
+      }
+
       state.cart.push({
         id:
           typeof crypto !== "undefined" &&
@@ -277,9 +291,9 @@ function getGemRuleProblems() {
   for (const [name, quantities] of Object.entries(totals)) {
     if (
       quantities.gem > 0 &&
-      quantities.ore < quantities.gem * 3
+      quantities.ore < quantities.gem * 6
     ) {
-      const requiredOre = quantities.gem * 3;
+      const requiredOre = quantities.gem * 6;
 
       problems.push(
         `${name} needs at least ${requiredOre} matching ore for ${quantities.gem} gem${quantities.gem === 1 ? "" : "s"}.`
@@ -375,7 +389,7 @@ function renderCart() {
       "validation-message ok";
 
     validationMessage.textContent =
-      "✓ Minimum 3 matching ore per gem requirement is met.";
+      "✓ Minimum 6 matching ore per gem requirement is met.";
   } else {
     validationMessage.className =
       "validation-message";
@@ -433,7 +447,7 @@ function buildDiscordText() {
   lines.push("");
 
   lines.push(
-    "_Gem rule: 1 uncut gem requires 3–5 matching ore._"
+    "_Gem rule: 1 uncut gem requires 6 matching ore._"
   );
 
   const problems = getGemRuleProblems();
