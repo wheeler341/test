@@ -141,38 +141,19 @@ function getCartQuantity(materialName, type) {
         item.name === materialName &&
         item.type === type
     )
-    .reduce(
-      (total, item) => total + item.qty,
-      0
-    );
+    .reduce((total, item) => total + item.qty, 0);
 }
 
 function getMaximumGems(materialName) {
-  const oreQty =
-    getCartQuantity(
-      materialName,
-      "ore"
-    );
-
-  return Math.floor(
-    oreQty / ORE_PER_GEM
-  );
+  const oreQty = getCartQuantity(materialName, "ore");
+  return Math.floor(oreQty / ORE_PER_GEM);
 }
 
 function getRemainingGemAllowance(materialName) {
-  const maximum =
-    getMaximumGems(materialName);
+  const maximum = getMaximumGems(materialName);
+  const current = getCartQuantity(materialName, "gem");
 
-  const current =
-    getCartQuantity(
-      materialName,
-      "gem"
-    );
-
-  return Math.max(
-    0,
-    maximum - current
-  );
+  return Math.max(0, maximum - current);
 }
 
 
@@ -212,12 +193,10 @@ function enforceGemRules() {
         }
 
         if (item.qty > remainingAllowed) {
-          item.qty =
-            remainingAllowed;
+          item.qty = remainingAllowed;
         }
 
-        gemsSeen +=
-          item.qty;
+        gemsSeen += item.qty;
 
         return item.qty > 0;
       });
@@ -233,13 +212,14 @@ function renderMaterials() {
   list.innerHTML = "";
 
   const filtered =
-    MATERIALS.filter(material =>
-      material.name
-        .toLowerCase()
-        .includes(
-          state.search.toLowerCase()
-        )
-    );
+    MATERIALS.filter(material => {
+      const searchText =
+        `${material.name} ${material.gemName || ""}`.toLowerCase();
+
+      return searchText.includes(
+        state.search.toLowerCase()
+      );
+    });
 
   if (!filtered.length) {
     list.innerHTML = `
@@ -247,7 +227,6 @@ function renderMaterials() {
         No matching materials found.
       </div>
     `;
-
     return;
   }
 
@@ -275,48 +254,58 @@ function renderMaterials() {
 
     const oreButton =
       buttons.find(
-        button =>
-          button.dataset.type === "ore"
+        button => button.dataset.type === "ore"
       );
 
     const gemButton =
       buttons.find(
-        button =>
-          button.dataset.type === "gem"
+        button => button.dataset.type === "gem"
       );
 
-    title.textContent =
-      material.name;
-
-    const gemDisplay =
-      material.gemName
-        ? `${material.gemName} — ${gp(material.gemPrice)}`
-        : "N/A";
-
-    prices.innerHTML = `
-      Ore <b>${gp(material.orePrice)}</b>
-      <span class="dot">•</span>
-      Gem <b>${gemDisplay}</b>
-    `;
-
-    let selectedType =
-      material.orePrice != null
-        ? "ore"
-        : "gem";
+    let selectedType = "ore";
 
 
-    // ---------------------------------------------
+    // =================================================
+    // UPDATE CARD DISPLAY
+    // =================================================
+
+    function updateCardDisplay() {
+      if (selectedType === "gem" && material.gemName) {
+        title.textContent =
+          material.gemName;
+
+        prices.innerHTML = `
+          Matching Ore <b>${material.name}</b>
+          <span class="dot">•</span>
+          Gem Price <b>${gp(material.gemPrice)}</b>
+        `;
+      } else {
+        title.textContent =
+          material.name;
+
+        if (material.gemName) {
+          prices.innerHTML = `
+            Ore <b>${gp(material.orePrice)}</b>
+            <span class="dot">•</span>
+            Gem <b>${material.gemName} — ${gp(material.gemPrice)}</b>
+          `;
+        } else {
+          prices.innerHTML = `
+            Ore <b>${gp(material.orePrice)}</b>
+            <span class="dot">•</span>
+            Gem <b>N/A</b>
+          `;
+        }
+      }
+    }
+
+
+    // =================================================
     // DISABLE UNAVAILABLE TYPES
-    // ---------------------------------------------
+    // =================================================
 
-    if (
-      material.orePrice == null
-    ) {
+    if (material.orePrice == null) {
       oreButton.disabled = true;
-
-      oreButton.classList.remove(
-        "active"
-      );
     }
 
     if (
@@ -324,32 +313,19 @@ function renderMaterials() {
       material.gemName == null
     ) {
       gemButton.disabled = true;
-
-      gemButton.classList.remove(
-        "active"
-      );
     }
 
-    if (
-      material.orePrice != null
-    ) {
+    if (material.orePrice != null) {
       selectedType = "ore";
-
-      oreButton.classList.add(
-        "active"
-      );
-
-      gemButton.classList.remove(
-        "active"
-      );
+      oreButton.classList.add("active");
+      gemButton.classList.remove("active");
     } else if (
-      material.gemPrice != null
+      material.gemPrice != null &&
+      material.gemName != null
     ) {
       selectedType = "gem";
-
-      gemButton.classList.add(
-        "active"
-      );
+      gemButton.classList.add("active");
+      oreButton.classList.remove("active");
     }
 
 
@@ -361,13 +337,11 @@ function renderMaterials() {
 
 
     // =================================================
-    // QUANTITY LIMIT
+    // QUANTITY LIMITS
     // =================================================
 
     function updateQuantityLimits() {
-      if (
-        selectedType === "gem"
-      ) {
+      if (selectedType === "gem") {
         const remainingAllowed =
           getRemainingGemAllowance(
             material.name
@@ -383,20 +357,15 @@ function renderMaterials() {
             )
           );
 
-        if (
-          remainingAllowed <= 0
-        ) {
+        if (remainingAllowed <= 0) {
           qty.value = "1";
-
           qty.disabled = true;
-
           add.disabled = true;
 
           add.textContent =
             `Need ${ORE_PER_GEM} Ore`;
         } else {
           qty.disabled = false;
-
           add.disabled = false;
 
           let currentValue =
@@ -420,26 +389,17 @@ function renderMaterials() {
           }
 
           qty.value =
-            String(
-              currentValue
-            );
+            String(currentValue);
 
           add.textContent =
             "Add";
         }
       } else {
         qty.min = "1";
-
-        qty.removeAttribute(
-          "max"
-        );
-
+        qty.removeAttribute("max");
         qty.disabled = false;
-
         add.disabled = false;
-
-        add.textContent =
-          "Add";
+        add.textContent = "Add";
       }
     }
 
@@ -458,17 +418,13 @@ function renderMaterials() {
           )
         );
 
-      if (
-        selectedType === "gem"
-      ) {
+      if (selectedType === "gem") {
         const maxAllowed =
           getRemainingGemAllowance(
             material.name
           );
 
-        if (
-          maxAllowed > 0
-        ) {
+        if (maxAllowed > 0) {
           amount =
             Math.min(
               amount,
@@ -486,9 +442,7 @@ function renderMaterials() {
       lineTotal.textContent =
         price == null
           ? "N/A"
-          : gp(
-              price * amount
-            );
+          : gp(price * amount);
     }
 
 
@@ -500,9 +454,7 @@ function renderMaterials() {
       button.addEventListener(
         "click",
         () => {
-          if (
-            button.disabled
-          ) {
+          if (button.disabled) {
             return;
           }
 
@@ -516,8 +468,8 @@ function renderMaterials() {
             );
           });
 
+          updateCardDisplay();
           updateQuantityLimits();
-
           updateLineTotal();
         }
       );
@@ -537,49 +489,33 @@ function renderMaterials() {
             10
           );
 
-        if (
-          !Number.isFinite(amount)
-        ) {
+        if (!Number.isFinite(amount)) {
           amount = 1;
         }
 
-        if (
-          selectedType === "gem"
-        ) {
+        if (selectedType === "gem") {
           const maxAllowed =
             getRemainingGemAllowance(
               material.name
             );
 
-          if (
-            maxAllowed <= 0
-          ) {
-            qty.value =
-              "1";
-
+          if (maxAllowed <= 0) {
+            qty.value = "1";
             return;
           }
 
-          if (
-            amount >
-            maxAllowed
-          ) {
-            amount =
-              maxAllowed;
+          if (amount > maxAllowed) {
+            amount = maxAllowed;
           }
 
-          if (
-            amount < 1
-          ) {
+          if (amount < 1) {
             amount = 1;
           }
 
           qty.value =
             String(amount);
         } else {
-          if (
-            amount < 1
-          ) {
+          if (amount < 1) {
             amount = 1;
           }
 
@@ -601,17 +537,13 @@ function renderMaterials() {
             10
           );
 
-        if (
-          selectedType === "gem"
-        ) {
+        if (selectedType === "gem") {
           const maxAllowed =
             getRemainingGemAllowance(
               material.name
             );
 
-          if (
-            maxAllowed > 0
-          ) {
+          if (maxAllowed > 0) {
             amount =
               Math.min(
                 Math.max(
@@ -644,9 +576,7 @@ function renderMaterials() {
     add.addEventListener(
       "click",
       () => {
-        if (
-          add.disabled
-        ) {
+        if (add.disabled) {
           return;
         }
 
@@ -662,9 +592,7 @@ function renderMaterials() {
         const price =
           unitPrice();
 
-        if (
-          price == null
-        ) {
+        if (price == null) {
           alert(
             "This item is currently unavailable."
           );
@@ -672,22 +600,13 @@ function renderMaterials() {
           return;
         }
 
-
-        // ---------------------------------------------
-        // GEM MAX CHECK
-        // ---------------------------------------------
-
-        if (
-          selectedType === "gem"
-        ) {
+        if (selectedType === "gem") {
           const remainingAllowed =
             getRemainingGemAllowance(
               material.name
             );
 
-          if (
-            remainingAllowed <= 0
-          ) {
+          if (remainingAllowed <= 0) {
             alert(
               `You need ${ORE_PER_GEM} ${material.name} Ore for every 1 ${material.gemName}.`
             );
@@ -700,11 +619,7 @@ function renderMaterials() {
               amount,
               remainingAllowed
             );
-
-          qty.value =
-            String(amount);
         }
-
 
         state.cart.push({
           id: createId(),
@@ -717,14 +632,13 @@ function renderMaterials() {
         enforceGemRules();
 
         renderCart();
-
         renderMaterials();
       }
     );
 
 
+    updateCardDisplay();
     updateQuantityLimits();
-
     updateLineTotal();
 
     list.appendChild(node);
@@ -753,16 +667,14 @@ function getGemRuleProblems() {
       );
 
     const requiredOre =
-      gemQty *
-      ORE_PER_GEM;
+      gemQty * ORE_PER_GEM;
 
     if (
       gemQty > 0 &&
-      oreQty <
-      requiredOre
+      oreQty < requiredOre
     ) {
       problems.push(
-        `${material.gemName || material.name + " Gem"} needs ${requiredOre} matching ${material.name} Ore for ${gemQty} gem${gemQty === 1 ? "" : "s"}.`
+        `${material.gemName || material.name + " Gem"} needs ${requiredOre} matching ${material.name} Ore.`
       );
     }
   });
@@ -781,39 +693,31 @@ function renderCart() {
   const count =
     state.cart.reduce(
       (sum, item) =>
-        sum +
-        item.qty,
+        sum + item.qty,
       0
     );
 
   cartCount.textContent =
     `${count} item${count === 1 ? "" : "s"}`;
 
-  if (
-    !state.cart.length
-  ) {
+  if (!state.cart.length) {
     cartItems.innerHTML = `
       <div class="empty-cart">
         Nothing added yet.
       </div>
     `;
   } else {
-    cartItems.innerHTML =
-      "";
+    cartItems.innerHTML = "";
 
     state.cart.forEach(item => {
       const row =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       row.className =
         "cart-row";
 
       const material =
-        getMaterial(
-          item.name
-        );
+        getMaterial(item.name);
 
       const displayName =
         item.type === "ore"
@@ -832,10 +736,7 @@ function renderCart() {
         </div>
 
         <div class="cart-price">
-          ${gp(
-            item.qty *
-            item.unitPrice
-          )}
+          ${gp(item.qty * item.unitPrice)}
         </div>
 
         <button
@@ -847,9 +748,7 @@ function renderCart() {
       `;
 
       row
-        .querySelector(
-          ".remove-btn"
-        )
+        .querySelector(".remove-btn")
         .addEventListener(
           "click",
           () => {
@@ -872,9 +771,7 @@ function renderCart() {
                   item.id
               );
 
-            if (
-              removingOre
-            ) {
+            if (removingOre) {
               enforceGemRules();
 
               const gemsAfter =
@@ -884,12 +781,9 @@ function renderCart() {
                 );
 
               const removedGems =
-                gemsBefore -
-                gemsAfter;
+                gemsBefore - gemsAfter;
 
-              if (
-                removedGems > 0
-              ) {
+              if (removedGems > 0) {
                 const material =
                   getMaterial(
                     materialName
@@ -900,27 +794,19 @@ function renderCart() {
                   `${materialName} Gem`;
 
                 alert(
-                  `${removedGems} ${gemName}${removedGems === 1 ? "" : "s"} were removed because you no longer have enough ${materialName} Ore.\n\nYou need ${ORE_PER_GEM} ore per gem.`
+                  `${removedGems} ${gemName}${removedGems === 1 ? "" : "s"} were removed because there is no longer enough ${materialName} Ore.`
                 );
               }
             }
 
             renderCart();
-
             renderMaterials();
           }
         );
 
-      cartItems.appendChild(
-        row
-      );
+      cartItems.appendChild(row);
     });
   }
-
-
-  // =================================================
-  // GRAND TOTAL
-  // =================================================
 
   const total =
     state.cart.reduce(
@@ -934,28 +820,19 @@ function renderCart() {
   grandTotal.textContent =
     gp(total);
 
-
-  // =================================================
-  // VALIDATION MESSAGE
-  // =================================================
-
   const problems =
     getGemRuleProblems();
 
-  if (
-    problems.length
-  ) {
+  if (problems.length) {
     validationMessage.className =
       "validation-message";
 
     validationMessage.textContent =
-      "⚠ " +
-      problems[0];
+      "⚠ " + problems[0];
 
   } else if (
     state.cart.some(
-      item =>
-        item.type === "gem"
+      item => item.type === "gem"
     )
   ) {
     validationMessage.className =
@@ -972,16 +849,9 @@ function renderCart() {
       "";
   }
 
-
-  // =================================================
-  // SAVE CART
-  // =================================================
-
   localStorage.setItem(
     "koruxaOrder",
-    JSON.stringify(
-      state.cart
-    )
+    JSON.stringify(state.cart)
   );
 }
 
@@ -991,9 +861,7 @@ function renderCart() {
 // =====================================================
 
 function buildDiscordText() {
-  if (
-    !state.cart.length
-  ) {
+  if (!state.cart.length) {
     return "Koruxa Order: (empty)";
   }
 
@@ -1003,9 +871,7 @@ function buildDiscordText() {
     const key =
       `${item.name}|${item.type}`;
 
-    if (
-      !grouped[key]
-    ) {
+    if (!grouped[key]) {
       grouped[key] = {
         ...item,
         qty: 0
@@ -1021,31 +887,17 @@ function buildDiscordText() {
     ""
   ];
 
-  Object.values(
-    grouped
-  ).forEach(item => {
+  Object.values(grouped).forEach(item => {
     const material =
-      getMaterial(
-        item.name
-      );
+      getMaterial(item.name);
 
-    let label;
-
-    if (
+    const label =
       item.type === "ore"
-    ) {
-      label =
-        `${item.name} Ore`;
-    } else {
-      label =
-        `${material?.gemName || item.name + " Gem"} (Uncut Gem)`;
-    }
+        ? `${item.name} Ore`
+        : `${material?.gemName || item.name + " Gem"} (Uncut Gem)`;
 
     lines.push(
-      `• ${label} × ${item.qty} — ${gp(
-        item.qty *
-        item.unitPrice
-      )}`
+      `• ${label} × ${item.qty} — ${gp(item.qty * item.unitPrice)}`
     );
   });
 
@@ -1061,9 +913,7 @@ function buildDiscordText() {
     `_Gem rule: 1 uncut gem requires ${ORE_PER_GEM} matching ore._`
   );
 
-  return lines.join(
-    "\n"
-  );
+  return lines.join("\n");
 }
 
 
@@ -1087,16 +937,13 @@ search.addEventListener(
 // =====================================================
 
 document
-  .querySelector(
-    "#clearOrder"
-  )
+  .querySelector("#clearOrder")
   .addEventListener(
     "click",
     () => {
       state.cart = [];
 
       renderCart();
-
       renderMaterials();
     }
   );
@@ -1107,28 +954,12 @@ document
 // =====================================================
 
 document
-  .querySelector(
-    "#copyOrder"
-  )
+  .querySelector("#copyOrder")
   .addEventListener(
     "click",
     async event => {
       enforceGemRules();
-
       renderCart();
-
-      const problems =
-        getGemRuleProblems();
-
-      if (
-        problems.length
-      ) {
-        alert(
-          "This order does not meet the gem requirement."
-        );
-
-        return;
-      }
 
       const text =
         buildDiscordText();
@@ -1140,7 +971,6 @@ document
 
         event.currentTarget.textContent =
           "Copied ✓";
-
       } catch {
         window.prompt(
           "Copy your order:",
@@ -1176,26 +1006,14 @@ try {
       ) || "[]"
     );
 
-  if (
-    Array.isArray(saved)
-  ) {
-    state.cart =
-      saved;
+  if (Array.isArray(saved)) {
+    state.cart = saved;
   }
-
 } catch {
   state.cart = [];
 }
 
-
-// Fix any saved carts that do not meet the 6:1 rule
 enforceGemRules();
 
-
-// =====================================================
-// START
-// =====================================================
-
 renderMaterials();
-
 renderCart();
