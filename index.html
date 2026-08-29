@@ -1,88 +1,326 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#071013" />
-  <title>Koruxa Ore & Gem Shop</title>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Koruxa Ore & Gem Market</title>
+
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-  <div class="app-shell">
-    <header class="hero">
-      <div class="eyebrow">KORUXA MARKET</div>
-      <h1>Ore & Gem Shop</h1>
-      <p class="subtitle">Choose a material, set a quantity, and build your order.</p>
+
+  <main class="app-shell">
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="hero">
+
+      <div class="eyebrow">
+        KORUXA MARKET
+      </div>
+
+      <h1>
+        Ore & Gem Market
+      </h1>
+
+      <p class="subtitle">
+        Build your order below and submit it when you're ready.
+      </p>
+
       <div class="rule-banner">
         <span class="rule-icon">◆</span>
-        <strong>Gem rule:</strong> Every 1 uncut gem requires 6 matching ore in the same order.
+
+        Every uncut gem requires
+        <strong>6 matching ore</strong>
+        already added to your basket.
       </div>
-    </header>
 
-    <main>
-      <section class="toolbar">
-        <label class="search-wrap" aria-label="Search materials">
-          <span>⌕</span>
-          <input id="search" type="search" placeholder="Search ore or gems..." autocomplete="off" />
-        </label>
-        <button id="clearOrder" class="ghost-btn" type="button">Clear order</button>
-      </section>
+    </section>
 
-      <section id="materialList" class="material-list" aria-live="polite"></section>
-    </main>
-  </div>
 
-  <aside id="cart" class="cart">
-    <div class="cart-inner">
-      <div class="cart-heading">
+    <!-- =====================================================
+         SEARCH
+    ====================================================== -->
+
+    <section class="toolbar">
+
+      <label class="search-wrap">
+
+        <span>⌕</span>
+
+        <input
+          id="search"
+          type="search"
+          placeholder="Search ore or gems..."
+          autocomplete="off"
+        />
+
+      </label>
+
+    </section>
+
+
+    <!-- =====================================================
+         MATERIAL MARKET
+    ====================================================== -->
+
+    <section
+      id="materialList"
+      class="material-list"
+    ></section>
+
+
+    <!-- =====================================================
+         BASKET / CHECKOUT
+    ====================================================== -->
+
+    <section
+      id="basket"
+      class="basket-section"
+    >
+
+      <div class="basket-header">
+
         <div>
-          <div class="eyebrow">CURRENT ORDER</div>
-          <h2>Order Summary</h2>
+
+          <div class="basket-eyebrow">
+            YOUR BASKET
+          </div>
+
+          <h2>
+            Current Order
+          </h2>
+
         </div>
-        <div id="cartCount" class="count-pill">0 items</div>
+
+        <span
+          id="cartCount"
+          class="count-pill"
+        >
+          0 items
+        </span>
+
       </div>
 
-      <div id="cartItems" class="cart-items">
-        <div class="empty-cart">Nothing added yet.</div>
+
+      <!-- Basket Items -->
+
+      <div
+        id="cartItems"
+        class="cart-items"
+      >
+
+        <div class="empty-cart">
+          Your basket is empty.
+        </div>
+
       </div>
 
-      <div class="cart-footer">
-        <div class="total-row">
-          <span>Total</span>
-          <strong id="grandTotal">0 GP</strong>
-        </div>
-        <div id="validationMessage" class="validation-message"></div>
-        <button id="copyOrder" class="primary-btn" type="button">Copy Order for Discord</button>
+
+      <!-- Total -->
+
+      <div class="total-row">
+
+        <span>
+          Order Total
+        </span>
+
+        <strong id="grandTotal">
+          0 GP
+        </strong>
+
       </div>
-    </div>
-  </aside>
+
+
+      <div
+        id="validationMessage"
+        class="validation-message"
+      ></div>
+
+
+      <!-- =================================================
+           CUSTOMER INFORMATION
+      ================================================== -->
+
+      <div class="checkout-divider"></div>
+
+      <div class="checkout-title">
+
+        <h3>
+          Order Information
+        </h3>
+
+        <p>
+          Enter your Discord or in-game name so your order can be identified.
+        </p>
+
+      </div>
+
+
+      <div class="customer-fields">
+
+        <label class="field">
+
+          <span>
+            Discord / Game Name
+          </span>
+
+          <input
+            id="customerName"
+            type="text"
+            maxlength="60"
+            placeholder="Example: JoyboyLuffy"
+            autocomplete="off"
+          />
+
+        </label>
+
+
+        <label class="field">
+
+          <span>
+            Order Notes
+            <small>Optional</small>
+          </span>
+
+          <textarea
+            id="orderNotes"
+            maxlength="500"
+            rows="4"
+            placeholder="Anything we should know about your order?"
+          ></textarea>
+
+        </label>
+
+      </div>
+
+
+      <!-- =================================================
+           CHECKOUT BUTTONS
+      ================================================== -->
+
+      <div class="checkout-actions">
+
+        <button
+          id="clearOrder"
+          class="secondary-btn"
+          type="button"
+        >
+          Clear Basket
+        </button>
+
+        <button
+          id="submitOrder"
+          class="submit-btn"
+          type="button"
+        >
+          Submit Order
+        </button>
+
+      </div>
+
+
+      <div
+        id="submitStatus"
+        class="submit-status"
+      ></div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       MATERIAL TEMPLATE
+  ====================================================== -->
 
   <template id="materialTemplate">
+
     <article class="material-card">
+
       <div class="card-top">
-        <div class="material-icon">◆</div>
-        <div class="material-title">
-          <h3></h3>
-          <div class="prices"></div>
+
+        <div class="material-icon">
+          ◆
         </div>
+
+        <div class="material-title">
+
+          <h3></h3>
+
+          <div class="prices"></div>
+
+        </div>
+
       </div>
 
-      <div class="type-toggle" role="group" aria-label="Choose ore or gem">
-        <button class="type-btn active" data-type="ore" type="button">Ore</button>
-        <button class="type-btn" data-type="gem" type="button">Uncut Gem</button>
+
+      <div class="type-toggle">
+
+        <button
+          class="type-btn"
+          data-type="ore"
+          type="button"
+        >
+          Ore
+        </button>
+
+        <button
+          class="type-btn"
+          data-type="gem"
+          type="button"
+        >
+          Gem
+        </button>
+
       </div>
+
 
       <div class="card-bottom">
+
         <label class="qty-label">
-          <span>Qty</span>
-          <input class="qty-input" type="number" min="1" step="1" value="1" inputmode="numeric" />
+
+          Quantity
+
+          <input
+            class="qty-input"
+            type="number"
+            min="1"
+            value="1"
+            inputmode="numeric"
+          />
+
         </label>
-        <div class="line-total">0 GP</div>
-        <button class="add-btn" type="button">Add</button>
+
+
+        <div class="line-total">
+          0 GP
+        </div>
+
+
+        <button
+          class="add-btn"
+          type="button"
+        >
+          Add
+        </button>
+
       </div>
+
     </article>
+
   </template>
 
+
   <script src="script.js"></script>
+
 </body>
 </html>
